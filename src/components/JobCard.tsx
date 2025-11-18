@@ -19,7 +19,15 @@ export const JobCard = ({ job }: JobCardProps) => {
           <CardTitle className="text-xl">{job.title}</CardTitle>
           <Badge variant="secondary">{job.category}</Badge>
         </div>
-        <p className="text-lg font-semibold text-primary">{job.company}</p>
+        <p 
+          className="text-lg font-semibold text-primary hover:underline cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/company/${job.company.toLowerCase().replace(/\s/g, '-')}`);
+          }}
+        >
+          {job.company}
+        </p>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

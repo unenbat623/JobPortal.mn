@@ -62,7 +62,10 @@ export default function JobDetails({ onAuthClick }: JobDetailsProps) {
             <div className="flex justify-between items-start">
               <div>
                 <CardTitle className="text-3xl mb-2">{job.title}</CardTitle>
-                <div className="flex items-center gap-2 text-xl text-primary font-semibold mb-4">
+                <div 
+                  className="flex items-center gap-2 text-xl text-primary font-semibold mb-4 cursor-pointer hover:underline"
+                  onClick={() => navigate(`/company/${job.company.toLowerCase().replace(/\s/g, '-')}`)}
+                >
                   <Building2 className="h-5 w-5" />
                   {job.company}
                 </div>
