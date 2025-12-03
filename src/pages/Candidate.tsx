@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJobs } from '@/contexts/JobContext';
 import { User, Mail, Phone, MapPin, Upload, Plus, X, Briefcase } from 'lucide-react';
@@ -34,6 +35,24 @@ export default function Candidate() {
   const [experience, setExperience] = useState([
     { company: 'Tech Company', position: 'Junior Developer', period: '2023-2024', description: 'Web хөгжүүлэлт' },
   ]);
+
+  const [isAddEducationOpen, setIsAddEducationOpen] = useState(false);
+  const [isAddExperienceOpen, setIsAddExperienceOpen] = useState(false);
+
+  const [newEducation, setNewEducation] = useState({ school: '', degree: '', field: '', year: '' });
+  const [newExperience, setNewExperience] = useState({ company: '', position: '', period: '', description: '' });
+
+  const handleAddEducation = () => {
+    setEducation([...education, newEducation]);
+    setNewEducation({ school: '', degree: '', field: '', year: '' });
+    setIsAddEducationOpen(false);
+  };
+
+  const handleAddExperience = () => {
+    setExperience([...experience, newExperience]);
+    setNewExperience({ company: '', position: '', period: '', description: '' });
+    setIsAddExperienceOpen(false);
+  };
 
   const handleSaveProfile = () => {
     toast.success('Профайл амжилттай шинэчлэгдлээ!');
@@ -173,7 +192,12 @@ export default function Candidate() {
             {/* Education */}
             <Card>
               <CardHeader>
-                <CardTitle>Боловсрол</CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Боловсрол</CardTitle>
+                  <Button variant="outline" size="sm" onClick={() => setIsAddEducationOpen(true)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {education.map((edu, index) => (
@@ -183,7 +207,7 @@ export default function Candidate() {
                     <p className="text-sm text-muted-foreground">{edu.year}</p>
                   </div>
                 ))}
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => setIsAddEducationOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Боловсрол нэмэх
                 </Button>
@@ -204,7 +228,7 @@ export default function Candidate() {
                     <p className="text-sm">{exp.description}</p>
                   </div>
                 ))}
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => setIsAddExperienceOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Туршлага нэмэх
                 </Button>
@@ -249,6 +273,100 @@ export default function Candidate() {
             </Card>
           </div>
         </div>
+
+        {/* Add Education Dialog */}
+        <Dialog open={isAddEducationOpen} onOpenChange={setIsAddEducationOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Боловсрол нэмэх</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Сургууль</Label>
+                <Input
+                  value={newEducation.school}
+                  onChange={(e) => setNewEducation({ ...newEducation, school: e.target.value })}
+                  placeholder="МУИС"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Зэрэг</Label>
+                <Input
+                  value={newEducation.degree}
+                  onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
+                  placeholder="Бакалавр"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Мэргэжил</Label>
+                <Input
+                  value={newEducation.field}
+                  onChange={(e) => setNewEducation({ ...newEducation, field: e.target.value })}
+                  placeholder="Програм хангамж"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Он</Label>
+                <Input
+                  value={newEducation.year}
+                  onChange={(e) => setNewEducation({ ...newEducation, year: e.target.value })}
+                  placeholder="2020-2024"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddEducationOpen(false)}>Болих</Button>
+              <Button onClick={handleAddEducation}>Нэмэх</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Experience Dialog */}
+        <Dialog open={isAddExperienceOpen} onOpenChange={setIsAddExperienceOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Туршлага нэмэх</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Компани</Label>
+                <Input
+                  value={newExperience.company}
+                  onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
+                  placeholder="Tech Company"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Албан тушаал</Label>
+                <Input
+                  value={newExperience.position}
+                  onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })}
+                  placeholder="Senior Developer"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Хугацаа</Label>
+                <Input
+                  value={newExperience.period}
+                  onChange={(e) => setNewExperience({ ...newExperience, period: e.target.value })}
+                  placeholder="2022-2024"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Тайлбар</Label>
+                <Textarea
+                  value={newExperience.description}
+                  onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
+                  placeholder="Ажлын товч тайлбар..."
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddExperienceOpen(false)}>Болих</Button>
+              <Button onClick={handleAddExperience}>Нэмэх</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

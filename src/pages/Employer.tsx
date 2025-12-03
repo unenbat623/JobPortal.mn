@@ -11,6 +11,7 @@ import { useJobs } from '@/contexts/JobContext';
 import { Plus, Edit, Trash2, Users, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { TransactionCard } from '@/components/TransactionCard';
 
 export default function Employer() {
   const { user } = useAuth();
@@ -39,6 +40,33 @@ export default function Employer() {
   });
 
   const myJobs = jobs.filter(job => job.employerId === user?.id || job.company === user?.companyName);
+
+  const transactions = [
+    {
+      id: 1,
+      type: 'expense' as const,
+      amount: '150,000₮',
+      date: '2025-12-01',
+      description: 'Стандарт багц худалдан авалт',
+      status: 'completed' as const,
+    },
+    {
+      id: 2,
+      type: 'income' as const,
+      amount: '500,000₮',
+      date: '2025-11-28',
+      description: 'Буцаалт',
+      status: 'pending' as const,
+    },
+    {
+      id: 3,
+      type: 'expense' as const,
+      amount: '50,000₮',
+      date: '2025-11-15',
+      description: 'Онцлох зар үйлчилгээ',
+      status: 'completed' as const,
+    },
+  ];
 
   const handleAddJob = () => {
     if (!newJob.title || !newJob.description) {
@@ -114,14 +142,14 @@ export default function Employer() {
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Ажил олгогчийн самбар</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold">Миний зарууд</h2>
+            <Button onClick={() => setIsAddJobOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Шинэ зар нэмэх
+            </Button>
+          </div>
           <Dialog open={isAddJobOpen} onOpenChange={setIsAddJobOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Ажлын зар нэмэх
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Шинэ ажлын зар</DialogTitle>
@@ -240,100 +268,119 @@ export default function Employer() {
         </div>
 
         {/* Company Profile */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Компанийн профайл</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Компанийн нэр</Label>
-                <Input
-                  value={companyProfile.name}
-                  onChange={(e) => setCompanyProfile({ ...companyProfile, name: e.target.value })}
-                />
+        <div className="grid gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Компанийн мэдээлэл</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Компанийн нэр</Label>
+                  <Input
+                    value={companyProfile.name}
+                    onChange={(e) => setCompanyProfile({ ...companyProfile, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Вэбсайт</Label>
+                  <Input
+                    value={companyProfile.website}
+                    onChange={(e) => setCompanyProfile({ ...companyProfile, website: e.target.value })}
+                    placeholder="https://company.mn"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label>Вэбсайт</Label>
-                <Input
-                  value={companyProfile.website}
-                  onChange={(e) => setCompanyProfile({ ...companyProfile, website: e.target.value })}
-                  placeholder="https://company.mn"
+                <Label>Танилцуулга</Label>
+                <Textarea
+                  value={companyProfile.description}
+                  onChange={(e) => setCompanyProfile({ ...companyProfile, description: e.target.value })}
+                  rows={3}
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Танилцуулга</Label>
-              <Textarea
-                value={companyProfile.description}
-                onChange={(e) => setCompanyProfile({ ...companyProfile, description: e.target.value })}
-                rows={3}
+              <Button onClick={() => toast.success('Профайл хадгалагдлаа!')}>Хадгалах</Button>
+            </CardContent>
+          </Card>
+
+          {/* My Jobs */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Миний ажлын зарууд ({myJobs.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {myJobs.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  Та одоогоор ажлын зар нэмээгүй байна
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {myJobs.map((job) => (
+                    <div key={job.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-1">{job.title}</h3>
+                          <p className="text-sm text-muted-foreground">{job.location} • {job.category}</p>
+                        </div>
+                        {getStatusBadge(job.status)}
+                      </div>
+
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {job.applicants.length} өргөдөл
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Eye className="h-4 w-4" />
+                          {job.postedDate}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setEditingJob(job);
+                            setIsEditJobOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Засах
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteJob(job.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Устгах
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Transaction History */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Гүйлгээний түүх</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {transactions.map((transaction) => (
+              <TransactionCard
+                key={transaction.id}
+                type={transaction.type}
+                amount={transaction.amount}
+                date={transaction.date}
+                description={transaction.description}
+                status={transaction.status}
               />
-            </div>
-            <Button onClick={() => toast.success('Профайл хадгалагдлаа!')}>Хадгалах</Button>
-          </CardContent>
-        </Card>
-
-        {/* My Jobs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Миний ажлын зарууд ({myJobs.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {myJobs.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                Та одоогоор ажлын зар нэмээгүй байна
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {myJobs.map((job) => (
-                  <div key={job.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-1">{job.title}</h3>
-                        <p className="text-sm text-muted-foreground">{job.location} • {job.category}</p>
-                      </div>
-                      {getStatusBadge(job.status)}
-                    </div>
-
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {job.applicants.length} өргөдөл
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        {job.postedDate}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditingJob(job);
-                          setIsEditJobOpen(true);
-                        }}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Засах
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteJob(job.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Устгах
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        </div>
 
         {/* Edit Dialog */}
         <Dialog open={isEditJobOpen} onOpenChange={setIsEditJobOpen}>

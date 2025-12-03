@@ -29,24 +29,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string, role: 'candidate' | 'employer') => {
-    // Simulate login
     const mockUser: User = {
       id: Math.random().toString(36).substr(2, 9),
       email,
       name: email.split('@')[0],
       role,
     };
-    
+
     if (role === 'employer') {
       mockUser.companyName = 'Миний Компани';
     }
-    
-    // Admin login
+
     if (email === 'admin@jobportal.mn' && password === 'admin123') {
       mockUser.role = 'admin';
       mockUser.name = 'Админ';
     }
-    
+
     setUser(mockUser);
     localStorage.setItem('jobportal_user', JSON.stringify(mockUser));
   };
@@ -59,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       role,
       companyName: role === 'employer' ? companyName : undefined,
     };
-    
+
     setUser(mockUser);
     localStorage.setItem('jobportal_user', JSON.stringify(mockUser));
   };

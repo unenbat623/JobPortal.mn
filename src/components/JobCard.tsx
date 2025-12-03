@@ -16,35 +16,48 @@ export const JobCard = ({ job }: JobCardProps) => {
     <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => navigate(`/jobs/${job.id}`)}>
       <CardHeader>
         <div className="flex justify-between items-start mb-2">
-          <CardTitle className="text-xl">{job.title}</CardTitle>
+          <div className="flex gap-4">
+            {job.logo && (
+              <img
+                src={job.logo}
+                alt={`${job.company} logo`}
+                className="w-12 h-12 rounded-lg object-cover shadow-sm"
+              />
+            )}
+            <div>
+              <CardTitle className="text-xl">{job.title}</CardTitle>
+              <p
+                className="text-lg font-semibold text-primary hover:underline cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/company/${job.company.toLowerCase().replace(/\s/g, '-')}`);
+                }}
+              >
+                {job.company}
+              </p>
+            </div>
+          </div>
           <Badge variant="secondary">{job.category}</Badge>
         </div>
-        <p 
-          className="text-lg font-semibold text-primary hover:underline cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/company/${job.company.toLowerCase().replace(/\s/g, '-')}`);
-          }}
-        >
-          {job.company}
-        </p>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            {job.location}
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <DollarSign className="h-4 w-4" />
-            {job.salary}
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Briefcase className="h-4 w-4" />
-            {job.experience}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              <span>{job.location}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <DollarSign className="h-4 w-4" />
+              <span>{job.salary}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Briefcase className="h-4 w-4" />
+              <span>{job.experience}</span>
+            </div>
           </div>
           <p className="text-sm text-muted-foreground line-clamp-2">{job.description}</p>
-          <Button className="w-full mt-4" onClick={(e) => {
+          <Button className="w-full mt-2" onClick={(e) => {
             e.stopPropagation();
             navigate(`/jobs/${job.id}`);
           }}>
